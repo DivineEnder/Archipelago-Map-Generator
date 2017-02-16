@@ -1,6 +1,7 @@
 # @Date:   2017-02-15 00:20:56
-# @Last modified time: 2017-02-15 01:27:15
+# @Last modified time: 2017-02-15 01:45:11
 
+import sys
 import math
 import random
 from PIL import Image
@@ -27,9 +28,9 @@ def createImg(arch_map):
 
     img.save("output.png")
 
-# Random true or false swtich
-def pickRandBool(probability):
-	return random.random() < probability
+# # Random true or false swtich
+# def pickRandBool(probability):
+#     return random.random() < probability
 
 # Pick a random open spot in the square to fill
 def pickRandSpot(size):
@@ -41,9 +42,9 @@ def pickRandSpot(size):
 
     return (row, col)
 
-def getProbLand(origin, x, y):
+def isLand(origin, x, y):
     distance = math.sqrt(math.pow(origin[0] - x, 2) + math.pow(origin[1] - y, 2))
-    return (1.0 / math.pow(distance, 0.2))
+    return random.random() <= (1.0 / math.pow(distance, 0.2))
 
 def recursive_grow(arch_map, origin, x, y):
     if x < 0 or x >= len(arch_map) or y < 0 or y >= len(arch_map[x]):
@@ -54,29 +55,27 @@ def recursive_grow(arch_map, origin, x, y):
 
     # Down grow
     if x + 1 < len(arch_map) and arch_map[x + 1][y] == 0:
-        prob_land = getProbLand(origin, x + 1, y)
-        if pickRandBool(prob_land):
+        if isLand(origin, x + 1, y):
             recursive_grow(arch_map, origin, x + 1, y)
 
     # Up grow
     if x - 1 > 0 and arch_map[x - 1][y] == 0:
-        prob_land = getProbLand(origin, x - 1, y)
-        if pickRandBool(prob_land):
+        if isLand(origin, x - 1, y):
             recursive_grow(arch_map, origin, x - 1, y)
 
     # Right grow
     if y + 1 < len(arch_map[x]) and arch_map[x][y + 1] == 0:
-        prob_land = getProbLand(origin, x, y + 1)
-        if pickRandBool(prob_land):
+        if isLand(origin, x, y + 1):
             recursive_grow(arch_map, origin, x, y + 1)
 
     # Left grow
     if y - 1 > 0 and arch_map[x][y - 1] == 0:
-        prob_land = getProbLand(origin, x, y - 1)
-        if pickRandBool(prob_land):
+        if isLand(origin, x, y - 1):
             recursive_grow(arch_map, origin, x, y - 1)
 
 def main():
+    sys.setrecursionlimit(10000000)
+
     num_init_pts = int(input("Number of starting points to grow: "))
     size = int(input("Map size: "))
 
